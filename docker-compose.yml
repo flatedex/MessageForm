@@ -1,0 +1,25 @@
+services:
+  postgres:
+    hostname: postgres
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+    networks: 
+      - bridge
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=root
+      - PGADMIN_DEFAULT_EMAIL=root@root.com
+    ports:
+      - "80:80"
+    networks: 
+      - bridge
+networks:
+  bridge:
+    driver: bridge
+
