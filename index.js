@@ -32,20 +32,40 @@ app.get('/', (req, res) => {
 });
 
 app.post('/sms', async (req, res) => {
-    const result = await pool.query('');
+    try {
+        const result = await pool.query('');
+    } catch(err) {
+        console.log(err.message);
+        res.sendStatus(502);
+    }
     res.sendStatus(200);
 });
 app.post('/telegram', async (req, res) => {
-    const { text, buttonCount } = req.body;
-    const result = await pool.query('INSERT INTO mailing (mailing_text, button_count)');
+    try {
+        const { text, buttonCount } = req.body;
+        const result = await pool.query(`INSERT INTO mailing (mailing_text, button_count) VALUES ($1, $2)`, {text, buttonCount});
+    } catch(err) {
+        console.log(err.message);
+        res.sendStatus(502);
+    }
     res.sendStatus(200);
 });
 app.post('/whatsapp', async (req, res) => {
-    const result = await pool.query('');
+    try {
+        const result = await pool.query('');
+    } catch(err) {
+        console.log(err.message);
+        res.sendStatus(502);
+    }
     res.sendStatus(200);
 });
 app.post('/vkontakte', async (req, res) => {
-    const result = await pool.query('');
+    try {
+        const result = await pool.query('');
+    } catch(err) {
+        console.log(err.message);
+        res.sendStatus(502);
+    }
     res.sendStatus(200);
 });
 
