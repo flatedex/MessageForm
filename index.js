@@ -26,9 +26,20 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static('public'));
 
-app.get('/', (req, res) => {
-    res.render("index");
+app.get('/', async (req, res) => {
+    await pool.query(`SELECT name FROM messenger;`, (error, result) => {
+        if(error){
+            throw error;
+        }
+        let rows = result.rows;
+        let toRender = [];
+        for(let i = 0; i < rows.length; i++){
+            toRender.push(rows[i].name);
+        }
+        res.render('index', {toRender: toRender});
+    });
 });
 
 app.post('/sms', async (req, res) => {

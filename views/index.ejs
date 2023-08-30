@@ -14,18 +14,28 @@
         }
 
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            padding-top: 100px; /* Location of the box */
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            padding-top: 100px;
+            /* Location of the box */
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0, 0, 0); /* Fallback color */
-            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
         }
+
         .close {
             color: white;
             float: right;
@@ -40,132 +50,65 @@
             cursor: pointer;
         }
     </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="modal-container">
-        <div class="block">
-            <input id="sms-button" class="modal-button" type="button" value="Add message to SMS" />
-        </div>
-        <div id="modal-sms" class="modal">
-            <div class="modal-content  form_addperson_block_content">
-                <div class="modal-header">
-                    <span id="close-sms" class="close">&times;</span>
-                    <h2>Шапка модального окна</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="size">
-                        <p id="name">Добавление сообщения в SMS</p>
-                        <form id="form" class="form_addperson_style" action="/sms" method="post">
-                            <input id="message-field" type="text" placeholder="Введите сообщение">
-                            <input type="submit" value="Save message template">
-                        </form>
-                    </div>
-                </div>
+    <div class="container">
+        <form id="add-canal" class="form_addperson_style" action="/sms" method="post">
+            <select id="selector">
+                <% if(toRender){ %>
+                    <% for(let i=0; i < toRender.length; i++){ %>
+                        <option>
+                            <%=toRender[i] %>
+                        </option>
+                        <% } %>
+                            <% } %>
+            </select>
+            <p id="name">Добавление сообщения</p>
+            <textarea id="message-field" name="message" placeholder="Введите сообщение"></textarea>
+            <div class="options">
+                <button id="add-button">Добавить кнопку</button>
+                <input id="inline-checkbox" type="checkbox">
+                <div class="button-names"></div>
             </div>
-        </div>
-    </div>
-    <div class="modal-container">
-        <div class="block">
-            <input id="telegram-button" class="modal-button" type="button" value="Add message to Telegram" />
-        </div>
-        <div id="modal-telegram" class="modal">
-            <div class="modal-content  form_addperson_block_content">
-                <div class="modal-header">
-                    <span id="close-tg" class="close">&times;</span>
-                    <h2>Шапка модального окна</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="size">
-                        <p id="name">Добавление сообщения в Telegram</p>
-                        <form id="form" class="form_addperson_style" action="/telegram" method="post">
-                            <input id="message-field" type="text" placeholder="Введите сообщение">
-                            <input id="tg-checkbox" type="checkbox">
-                            <input type="submit" value="Save message template">
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal-container">
-        <div class="block">
-            <input id="whatsapp-button" class="modal-button" type="button" value="Add message to WhatsApp" />
-        </div>
-        <div id="modal-whatsapp" class="modal">
-            <div class="modal-content  form_addperson_block_content">
-                <div class="modal-header">
-                    <span id="close-whatsapp" class="close">&times;</span>
-                    <h2>Шапка модального окна</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="size">
-                        <p id="name">Добавление сообщения в WhatsApp</p>
-                        <form id="form" class="form_addperson_style" action="/whatsapp" method="post">
-                            <input id="message-field" type="text" placeholder="Введите сообщение">
-                            <input id="whatsapp-checkbox" type="checkbox">
-                            <input type="submit" value="Save message template">
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal-container">
-        <div class="block">
-            <input id="vk-button" class="modal-button" type="button" value="Add message to VKontakte" />
-        </div>
-        <div id="modal-vk" class="modal">
-            <div class="modal-content  form_addperson_block_content">
-                <div class="modal-header">
-                    <span id="close-vk" class="close">&times;</span>
-                    <h2>Шапка модального окна</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="size">
-                        <p id="name">Добавление сообщения в VKontakte</p>
-                        <form id="form" class="form_addperson_style" action="/vkontakte" method="post">
-                            <input id="message-field" type="text" placeholder="Введите сообщение">
-                            <input id="vk-checkbox" type="checkbox">
-                            <input type="submit" value="Save message template">
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+            <button id="save-to-db" class="save" type="submit" hidden="hidden">Save to database</button>
+            <button id="send-message" class="send" type="submit">Send message</button>
+        </form>
     </div>
 </body>
 
 <script defer>
-    document.addEventListener("DOMContentLoaded", ready);
-    function ready(){
-        let modal_containers = document.querySelectorAll(".modal-container");
-        for (let div of modal_containers){
-            let modal = div.querySelector(".modal");
-            let button = div.querySelector(".modal-button");
-            let close = div.querySelector(".close");
-            let modalId = modal.id;
-            let buttonId = button.id;
-            let closeId = close.id;
-            ModalWork(modalId, buttonId, closeId);
-        }
-    }
-    function ModalWork(modalId, openBtnId, closeBtnId) {
-        let modal = document.getElementById(`${modalId}`);
-        console.log(modal);
-        let btn = document.getElementById(`${openBtnId}`);
-        let span = document.getElementById(`${closeBtnId}`);
-        btn.onclick = function () {
-            modal.style.display = "block";
-        }
-        span.onclick = function () {
-            modal.style.display = "none";
-        }
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+    let counter = 0;
+    let selector = document.querySelector("#selector");
+    selector.addEventListener("change", function () {
+        let options = document.querySelector(".options");
+        if (selector.value != "SMS") {
+            options.style.display = "block";
+        } else {
+            let names = document.querySelector(".button-names");
+            while(names.firstChild){
+                names.removeChild(names.firstChild);
             }
+            options.style.display = "none";
+            let checkbox = document.querySelector("#inline-checkbox");
         }
+    })
+    let addBtn = document.getElementById("add-button");
+    addBtn.onclick = function (e) {
+        e.preventDefault();
+        let input = document.createElement('input');
+        input.type = "text";
+        input.id = `button-text-${counter}`;
+        counter++;
+        let form = document.querySelector(".button-names");
+        form.append(input);
+    }
+    let saveToDB = document.getElementById("save-to-db");
+    saveToDB.onclick = function (e) {
+        e.preventDefault();
+        //send form to save
     }
 </script>
 
