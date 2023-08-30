@@ -1,7 +1,64 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 20px;
+}
+body{
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+}
+.channel-settings{
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+    column-gap: 20px;
+}
+.channel-selection{
+    display: flex;
+    flex-direction: row;
+    row-gap: 20px;
+    column-gap: 20px;
+}
 .container{
+    margin-top: 5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 50%;
     background-color: pink;
+    row-gap: 20px;
+    column-gap: 20px;
 }
-.options{
-    display: none;
+.channel-add-buttons{
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+    column-gap: 20px;
+}
+.channel-add-buttons__button-names{
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+}
+.containerBtn{
+    display: flex;
+    justify-content: space-between;
+}
+
+.closeModal {
+	width: 24px;
+	height: 24px;
+	opacity: 0.2;
+	cursor: pointer;
+  transition: opacity ease 0.5s;
+
+}
+.closeModal:hover{
+    opacity: 1;
+}
+.closeModal::before {
+	content: '╳';
+	display: block;
 }

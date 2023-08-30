@@ -55,26 +55,37 @@
 
 <body>
     <div class="container">
-        <form id="add-canal" class="form_addperson_style" action="/sms" method="post">
-            <select id="selector">
-                <% if(toRender){ %>
-                    <% for(let i=0; i < toRender.length; i++){ %>
-                        <option>
-                            <%=toRender[i] %>
-                        </option>
-                        <% } %>
+        <form class="channel-settings" action="/sms" method="post">
+            <div class="channel-selection">
+                <p>Выберите канал</p>
+                <select id="selector" class="channel-selection__selector">
+                    <% if(toRender){ %>
+                        <% for(let i=0; i < toRender.length; i++){ %>
+                            <option>
+                                <%=toRender[i] %>
+                            </option>
                             <% } %>
-            </select>
-            <p id="name">Добавление сообщения</p>
-            <textarea id="message-field" name="message" placeholder="Введите сообщение"></textarea>
-            <div class="options">
-                <button id="add-button">Добавить кнопку</button>
-                <input id="inline-checkbox" type="checkbox">
-                <div class="button-names"></div>
+                                <% } %>
+                </select>
+            </div>
+            <div class="channel-message">
+                <p id="name" class="channel-message__text">Добавление сообщения</p>
+                <textarea id="message-field" class="channel-message__textarea" name="message" placeholder="Введите сообщение"></textarea>
             </div>
 
-            <button id="save-to-db" class="save" type="submit" hidden="hidden">Save to database</button>
-            <button id="send-message" class="send" type="submit">Send message</button>
+            <div class="channel-add-buttons">
+                <button id="add-button" class="channel-add-buttons__button">Добавить кнопку</button>
+                <div class="area channel-add-buttons__inline"><label>inline</label>
+                    <input id="inline-checkbox" type="checkbox">
+                </div>
+
+                <div class="channel-add-buttons__button-names"></div>
+            </div>
+            <div class="channel-send-buttons">
+                <button id="save-to-db" class="save" type="submit">Save to database</button>
+                <button id="send-message" class="send" type="submit">Send message</button>
+            </div>
+
         </form>
     </div>
 </body>
@@ -83,12 +94,28 @@
     let counter = 0;
     let selector = document.querySelector("#selector");
     selector.addEventListener("change", function () {
-        let options = document.querySelector(".options");
+        counter = 0;
+        let options = document.querySelector(".channel-add-buttons");
+        let textarea = document.querySelector("#message-field");
+        //ограничение колва символов для разных каналов
+        switch (selector.value) {
+            case "SMS":
+                break;
+            case "VKontacte":
+                textarea.maxlength = "4096"
+                break;
+            case "Telegram":
+                textarea.maxlength = "4096"
+                break;
+            case "WhatsApp":
+                textarea.maxlength = "1000"
+                break;
+        }
         if (selector.value != "SMS") {
             options.style.display = "block";
         } else {
-            let names = document.querySelector(".button-names");
-            while(names.firstChild){
+            let names = document.querySelector(".channel-add-buttons__button-names");
+            while (names.firstChild) {
                 names.removeChild(names.firstChild);
             }
             options.style.display = "none";
@@ -98,12 +125,60 @@
     let addBtn = document.getElementById("add-button");
     addBtn.onclick = function (e) {
         e.preventDefault();
+        let selectedCanal = document.querySelector("#selector");
+        let checkbox = document.querySelector("#inline-checkbox");
+        if (selectedCanal == "Vkontacte") {
+            if ((!checkbox.checked) && (counter < 40)) {
+                counter++;
+                AddButton(counter);
+            } else if ((checkbox.checked) && (counter < 10)) {
+                counter++;
+                AddButton(counter);
+            }
+        } else if (selectedCanal == "WhatsApp") {
+            if ((!checkbox.checked) && (counter < 10)) {
+                counter++;
+                AddButton(counter, 20);
+            } else if ((checkbox.checked) && (counter < 3)) {
+                counter++;
+                AddButton(counter, 20);
+            }
+        } else if (selectedCanal == "Telegram") {
+            if (checkbox.checked) {
+                counter++;
+                AddButton(counter, 64);
+            } else {
+                counter++;
+                AddButton(counter);
+            }
+        }
+
+
+    }
+    function AddButton(counter, maxL) {
+        let containerBtn = document.createElement('div');
+        containerBtn.classList.add('containerBtn');
+        let closeModal = document.createElement('div');
+        closeModal.classList.add('closeModal');
         let input = document.createElement('input');
         input.type = "text";
+        input.placeholder = "text";
+        input.classList.add("input-button");
         input.id = `button-text-${counter}`;
-        counter++;
-        let form = document.querySelector(".button-names");
-        form.append(input);
+        if (maxL) {
+            input.maxlength = maxL;
+        }
+        containerBtn.append(input);
+        containerBtn.append(closeModal);
+        let form = document.querySelector(".channel-add-buttons__button-names");
+        form.append(containerBtn);
+    }
+    let buttonNames = document.querySelector(".channel-add-buttons__button-namess");
+    buttonNames.onclick = function (e) {
+        let target = e.target;
+        if (target.classList.contains('closeModal')) {
+            target.parentElement.remove();
+        }
     }
     let saveToDB = document.getElementById("save-to-db");
     saveToDB.onclick = function (e) {
