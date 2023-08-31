@@ -55,10 +55,10 @@
 
 <body>
     <div class="container">
-        <form class="channel-settings" action="/sms" method="post">
+        <form class="channel-settings" id="main-form" method="post">
             <div class="channel-selection">
                 <p>Выберите канал</p>
-                <select id="selector" class="channel-selection__selector">
+                <select id="selector" class="channel-selection__selector" name="selector">
                     <% if(toRender){ %>
                         <% for(let i=0; i < toRender.length; i++){ %>
                             <option>
@@ -76,14 +76,14 @@
             <div class="channel-add-buttons">
                 <button id="add-button" class="channel-add-buttons__button">Добавить кнопку</button>
                 <div class="area channel-add-buttons__inline"><label>inline</label>
-                    <input id="inline-checkbox" type="checkbox">
+                    <input id="inline-checkbox" type="checkbox" name="checkbox">
                 </div>
 
                 <div class="channel-add-buttons__button-names"></div>
             </div>
             <div class="channel-send-buttons">
-                <button id="save-to-db" class="save" type="submit">Save to database</button>
-                <button id="send-message" class="send" type="submit">Send message</button>
+                <button id="save-to-db" class="save" type="submit">Сохранить</button>
+                <button id="send-message" class="send" type="submit">Отправить</button>
             </div>
 
         </form>
@@ -97,22 +97,27 @@
         counter = 0;
         let options = document.querySelector(".channel-add-buttons");
         let textarea = document.querySelector("#message-field");
+        textarea.value = "";
         //ограничение колва символов для разных каналов
         switch (selector.value) {
             case "SMS":
                 break;
-            case "VKontacte":
-                textarea.maxlength = "4096"
+            case "VKontakte":
+                textarea.maxLength = "4096";
                 break;
             case "Telegram":
-                textarea.maxlength = "4096"
+                textarea.maxLength = "4096";
                 break;
             case "WhatsApp":
-                textarea.maxlength = "1000"
+                textarea.maxLength = "1000";
                 break;
         }
         if (selector.value != "SMS") {
             options.style.display = "block";
+            let names = document.querySelector(".channel-add-buttons__button-names");
+            while (names.firstChild) {
+                names.removeChild(names.firstChild);
+            }
         } else {
             let names = document.querySelector(".channel-add-buttons__button-names");
             while (names.firstChild) {
@@ -120,14 +125,47 @@
             }
             options.style.display = "none";
             let checkbox = document.querySelector("#inline-checkbox");
+            //check for checkbox
         }
     })
+    let inline = document.querySelector("#inline-checkbox");
+
+    inline.onchange = function () {
+        let curSelector = document.querySelector("#selector");
+        let buttons = document.querySelector(".channel-add-buttons__button-names");
+        let countButtons = buttons.childElementCount;
+        if (inline.checked) {
+            switch (selector.value) {
+                case "VKontakte":
+                    if (countButtons > 10) {
+                        while (buttons.childElementCount > 10) {
+                            buttons.lastElementChild.remove();
+                        }
+                    }
+                    break;
+                case "Telegram":
+                    let inputs = buttons.querySelectorAll(".input-button");
+                    for(let i = 0; i < inputs.length; i++){
+                        inputs[i].maxLength = "64";
+                    }
+                    break;
+                case "WhatsApp":
+                    if (countButtons > 3) {
+                        while (buttons.childElementCount > 3) {
+                            buttons.lastElementChild.remove();
+                        }
+                    }
+                    break;
+            }
+        }
+
+    }
     let addBtn = document.getElementById("add-button");
     addBtn.onclick = function (e) {
         e.preventDefault();
         let selectedCanal = document.querySelector("#selector");
         let checkbox = document.querySelector("#inline-checkbox");
-        if (selectedCanal == "Vkontacte") {
+        if (selectedCanal.value == "VKontakte") {
             if ((!checkbox.checked) && (counter < 40)) {
                 counter++;
                 AddButton(counter);
@@ -135,7 +173,7 @@
                 counter++;
                 AddButton(counter);
             }
-        } else if (selectedCanal == "WhatsApp") {
+        } else if (selectedCanal.value == "WhatsApp") {
             if ((!checkbox.checked) && (counter < 10)) {
                 counter++;
                 AddButton(counter, 20);
@@ -143,7 +181,7 @@
                 counter++;
                 AddButton(counter, 20);
             }
-        } else if (selectedCanal == "Telegram") {
+        } else if (selectedCanal.value == "Telegram") {
             if (checkbox.checked) {
                 counter++;
                 AddButton(counter, 64);
@@ -152,9 +190,8 @@
                 AddButton(counter);
             }
         }
-
-
     }
+
     function AddButton(counter, maxL) {
         let containerBtn = document.createElement('div');
         containerBtn.classList.add('containerBtn');
@@ -163,6 +200,8 @@
         let input = document.createElement('input');
         input.type = "text";
         input.placeholder = "text";
+        input.name = `button-text-${counter}`;
+
         input.classList.add("input-button");
         input.id = `button-text-${counter}`;
         if (maxL) {
@@ -173,7 +212,7 @@
         let form = document.querySelector(".channel-add-buttons__button-names");
         form.append(containerBtn);
     }
-    let buttonNames = document.querySelector(".channel-add-buttons__button-namess");
+    let buttonNames = document.querySelector(".channel-add-buttons__button-names");
     buttonNames.onclick = function (e) {
         let target = e.target;
         if (target.classList.contains('closeModal')) {
@@ -183,7 +222,27 @@
     let saveToDB = document.getElementById("save-to-db");
     saveToDB.onclick = function (e) {
         e.preventDefault();
-        //send form to save
+        let textarea = document.querySelector("#message-field");
+        let form = document.querySelector("#main-form");
+
+        switch (selector.value) {
+            case "SMS":
+                form.action = "/sms";
+                form.submit();
+                break;
+            case "VKontakte":
+                form.action = "/vkontakte";
+                form.submit();
+                break;
+            case "Telegram":
+                form.action = "/telegram";
+                form.submit();
+                break;
+            case "WhatsApp":
+                form.action = "/whatsapp";
+                form.submit();
+                break;
+        }
     }
 </script>
 
